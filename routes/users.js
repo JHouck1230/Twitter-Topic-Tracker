@@ -24,9 +24,11 @@ router.get('/interests', User.authMiddleware, function(req, res) {
 });
 
 router.put('/viewTweets', User.authMiddleware, function(req, res) {
-  client.stream('statuses/filter', {track: req.body.interests.join()},  function(stream){
+  var interests = req.body.interests;
+  if(Array.isArray(req.body.interests)) interests = req.body.interests.join();
+  client.stream('statuses/filter', {track: interests},  function(stream){
   stream.on('data', function(tweet) {
-    console.log(tweet.user.screen_name, tweet.text);
+    console.log(tweet.user.screen_name, ': ', tweet.text);
   });
 
   stream.on('error', function(error) {
